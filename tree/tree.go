@@ -21,13 +21,7 @@ func CreateTree(value int) Tree {
 func (t *Tree) rightTurn() *Tree {
 	t.BFactor = 0
 	if t.left.BFactor > 0 {
-		t.left.BFactor--
-		t.Val, t.left.Val = t.left.Val, t.Val
-		t.right = t.left
-		t.left = t.left.left
-		t.left.parent = t
-		t.right.left = nil
-		return t
+		return t.smallRightTurn()
 	} else {
 		t.left.BFactor++
 		t.Val, t.left.right.Val = t.left.right.Val, t.Val
@@ -38,17 +32,43 @@ func (t *Tree) rightTurn() *Tree {
 	}
 }
 
+// малый поворот направо
+func (t *Tree) smallRightTurn() *Tree {
+	t.right = &Tree{
+		Val:    t.Val,
+		left:   t.left.right,
+		right:  t.right,
+		parent: t,
+		//BFactor: t.right.left.BFactor + t.left.right.BFactor,
+		BFactor: 0,
+	}
+	t.Val = t.left.Val
+	t.left = t.left.left
+	t.left.parent = t
+	return t
+}
+
+// малый поворот налево
+func (t *Tree) smallLeftTurn() *Tree {
+	t.left = &Tree{
+		Val:    t.Val,
+		left:   t.left,
+		right:  t.right.left,
+		parent: t,
+		//BFactor: t.left.left.BFactor + t.right.left.BFactor,
+		BFactor: 0,
+	}
+	t.Val = t.right.Val
+	t.right = t.right.right
+	t.right.parent = t
+	return t
+}
+
 // малый поворот налево
 func (t *Tree) leftTurn() *Tree {
 	t.BFactor = 0
 	if t.right.BFactor < 0 {
-		t.right.BFactor++
-		t.Val, t.right.Val = t.right.Val, t.Val
-		t.left = t.right
-		t.right = t.right.right
-		t.right.parent = t
-		t.left.right = nil
-		return t
+		return t.smallLeftTurn()
 	} else {
 		t.right.BFactor--
 		t.Val, t.right.left.Val = t.right.left.Val, t.Val
